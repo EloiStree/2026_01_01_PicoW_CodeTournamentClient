@@ -7,5 +7,6 @@ The player receives UTF-8 text data on the Pico and must send IID integer values
 
 The provided code is intended to run entirely offline, without any internet connection.
 
+[ESP32 Version](https://github.com/EloiStree/2026_01_01_ESP32_CodeTournamentClient)
 
 
