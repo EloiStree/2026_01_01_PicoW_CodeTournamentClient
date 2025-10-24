@@ -1,0 +1,55 @@
+import os
+import wifi
+import socketpool
+from adafruit_httpserver import Server, Request, Response, POST
+
+# Connect to Wi-Fi
+ssid = os.getenv("WIFI_SSID")
+password = os.getenv("WIFI_PASSWORD")
+wifi.radio.connect(ssid, password)
+print("Connected to WiFi:", wifi.radio.ipv4_address)
+
+# Create the HTTP server
+pool = socketpool.SocketPool(wifi.radio)
+server = Server(pool, "/", debug=True)
+
+# Serve a basic HTML page with a text form
+def html_page():
+    return """
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family: sans-serif;">
+        <h2>Pico W Text Input</h2>
+        <form action="/input" method="POST">
+            <input type="text" name="message" placeholder="Type something" />
+            <input type="submit" value="Send" />
+        </form>
+    </body>
+    </html>
+    """
+
+# Handle GET request for the main page
+@server.route("/")
+def main_page(request: Request):
+    return Response(request, html_page(), content_type="text/html")
+
+# Handle POST request to /input — print text to serial output
+@server.route("/input", POST)
+def receive_input(request: Request):
+    raw_text = request.body.decode("utf-8").strip()
+    print("Received raw:", raw_text)
+
+    # Basic parsing for simple form data like message=hello
+    if "message=" in raw_text:
+        text = raw_text.split("message=")[1]
+        print("User input:", text)
+
+    return Response(request, "Text received!", content_type="text/plain")
+
+# Start server on port 80
+server.start(str(wifi.radio.ipv4_address))
+print("Listening on http://%s" % wifi.radio.ipv4_address)
+
+# Main loop
+while True:
+    server.poll()

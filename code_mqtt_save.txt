@@ -1,0 +1,55 @@
+import time
+import board
+import wifi
+import socketpool
+import adafruit_minimqtt.adafruit_minimqtt as MQTT
+
+# Wi-Fi credentials
+SSID = "EloiStreeWifi2G"
+PASSWORD = "11234566"
+
+# MQTT broker info
+MQTT_BROKER = "192.168.1.112"
+MQTT_PORT = 1883
+MQTT_TOPIC_SUB = "test/topic"
+
+def connect_to_wifi():
+    print("Connecting to Wi-Fi...")
+    wifi.radio.connect(SSID, PASSWORD)
+    print("Connected with IP:", wifi.radio.ipv4_address)
+    return wifi.radio.ipv4_address
+
+def mqtt_message(client, topic, message):
+    print("Received message on topic {}: {}".format(topic, message))
+    # Echo the device IP back on the same topic
+    #client.publish(topic, str(ip_address))
+
+# Connect to Wi-Fi and get IP address
+ip_address = connect_to_wifi()
+
+# Create a socket pool for network connections
+pool = socketpool.SocketPool(wifi.radio)
+
+# Initialize MQTT client
+mqtt_client = MQTT.MQTT(
+    broker=MQTT_BROKER,
+    port=MQTT_PORT,
+    client_id="PicoW_Client",
+    socket_pool=pool,
+)
+
+# Set callback for incoming messages
+mqtt_client.on_message = mqtt_message
+
+print("Connecting to MQTT broker...")
+mqtt_client.connect()
+
+print("Subscribing to topic:", MQTT_TOPIC_SUB)
+mqtt_client.subscribe(MQTT_TOPIC_SUB)
+
+try:
+    while True:
+        mqtt_client.loop()
+        time.sleep(0.1)
+except KeyboardInterrupt:
+    print("Exiting...")
