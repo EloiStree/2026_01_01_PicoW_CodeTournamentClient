@@ -14,3 +14,7 @@ The provided code is intended to run entirely offline, without any internet conn
 - https://circuitpython.org/board/raspberry_pi_pico_w/
 - https://circuitpython.org/board/raspberry_pi_pico2_w/
 - https://circuitpython.org/libraries
+
+--------
+
+MQTT connection https://learn.adafruit.com/networking-in-circuitpython/networking-with-the-wifi-module
