@@ -9,4 +9,8 @@ The provided code is intended to run entirely offline, without any internet conn
 
 [ESP32 Version](https://github.com/EloiStree/2026_01_01_ESP32_CodeTournamentClient)
 
+-----
 
+- https://circuitpython.org/board/raspberry_pi_pico_w/
+- https://circuitpython.org/board/raspberry_pi_pico2_w/
+- https://circuitpython.org/libraries
